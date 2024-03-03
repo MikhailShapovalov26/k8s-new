@@ -1,0 +1,74 @@
+---
+- name: Install snapd
+  ansible.builtin.apt:
+    name: snapd
+
+- name: Install microK8S
+  community.general.snap:
+    name: microk8s
+    classic: true
+    channel: "{{ microk8s_version }}"
+
+# - name: Create kubectl alias
+#   ansible.builtin.command: "snap alias microk8s.kubectl kubectl"
+#   changed_when: false
+#   register: __aliaskubectlout
+
+- name: Add user to control group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: microk8s
+    append: true
+
+- name: Create .kube folder for the user
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0750"
+
+- name: Play needed tasks in order
+  ansible.builtin.include_tasks: "{{ item }}"
+  loop:
+    - kubectl.yml
+
+- name: Block
+  become: true
+  become_user: "{{ ansible_user }}"
+  block:
+    - name: Check Status
+      ansible.builtin.command: "microk8s status --wait-ready --format yaml"
+      changed_when: false
+      register: __microk8s_checkstatus
+
+    - name: Echo status
+      ansible.builtin.debug:
+        msg: "{{ __microk8s_checkstatus.stdout | from_yaml }}"
+
+    - name: Enable addons
+      ansible.builtin.command: "microk8s enable dashboard"
+      changed_when: false
+      register: __microk8s_enableaddons
+
+    - name: Check status addons
+      ansible.builtin.command: "microk8s status --format yaml"
+      changed_when: false
+      register: __microk8s_checkaddons
+
+    - name: Echo status addons
+      ansible.builtin.debug:
+        msg: "{{ __microk8s_checkaddons.stdout | from_yaml  }}"
+
+    - name: Create kubectl config
+      ansible.builtin.shell: microk8s config > ~/.kube/config
+      register: __null
+
+    - name: Get microk8s cluster nodes
+      ansible.builtin.command: "kubectl get node"
+      changed_when: false
+      register: __microk8s_cluster_node
+
+    - name: Echo status addons
+      ansible.builtin.debug:
+        msg: "{{ __microk8s_cluster_node.stdout  }}"

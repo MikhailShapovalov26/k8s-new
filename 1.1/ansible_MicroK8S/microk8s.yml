@@ -1,0 +1,6 @@
+- name: Install microK8S
+  hosts: micro
+  become: true
+  roles:
+    - role: microk8s
+      microk8s_version: "1.29/stable"

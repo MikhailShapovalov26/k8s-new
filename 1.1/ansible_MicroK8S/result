@@ -1,0 +1,428 @@
+
+PLAY [Install microK8S] ********************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [master]
+
+TASK [microk8s : Install snapd] ************************************************
+ok: [master]
+
+TASK [microk8s : Install microK8S] *********************************************
+ok: [master]
+
+TASK [microk8s : Add user to control group] ************************************
+ok: [master]
+
+TASK [microk8s : Create .kube folder for the user] *****************************
+ok: [master]
+
+TASK [microk8s : Play needed tasks in order] ***********************************
+included: /home/mshapovalov/Рабочий стол/Dev/new_netology/1.1/ansible_MicroK8S/roles/microk8s/tasks/kubectl.yml for master => (item=kubectl.yml)
+
+TASK [microk8s : Install Kubernetes binaries] **********************************
+ok: [master] => (item=apt-transport-https)
+ok: [master] => (item=ca-certificates)
+ok: [master] => (item=curl)
+
+TASK [microk8s : Install kubectl] **********************************************
+ok: [master]
+
+TASK [microk8s : Check Status] *************************************************
+ok: [master]
+
+TASK [microk8s : Echo status] **************************************************
+ok: [master] => {
+    "msg": {
+        "addons": [
+            {
+                "description": "The Kubernetes dashboard",
+                "name": "dashboard",
+                "repository": "core",
+                "status": "enabled",
+                "version": "2.6.0"
+            },
+            {
+                "description": "CoreDNS",
+                "name": "dns",
+                "repository": "core",
+                "status": "enabled",
+                "version": "1.10.1"
+            },
+            {
+                "description": "Configure high availability on the current node",
+                "name": "ha-cluster",
+                "repository": "core",
+                "status": "enabled",
+                "version": "0.1.0"
+            },
+            {
+                "description": "Helm - the package manager for Kubernetes",
+                "name": "helm",
+                "repository": "core",
+                "status": "enabled",
+                "version": "3.9.1"
+            },
+            {
+                "description": "Helm 3 - the package manager for Kubernetes",
+                "name": "helm3",
+                "repository": "core",
+                "status": "enabled",
+                "version": "3.9.1"
+            },
+            {
+                "description": "K8s Metrics Server for API access to service metrics",
+                "name": "metrics-server",
+                "repository": "core",
+                "status": "enabled",
+                "version": "0.6.3"
+            },
+            {
+                "description": "Cloud native certificate management",
+                "name": "cert-manager",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.8.0"
+            },
+            {
+                "description": "Apply CIS K8s hardening",
+                "name": "cis-hardening",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.0.0"
+            },
+            {
+                "description": "The community addons repository",
+                "name": "community",
+                "repository": "core",
+                "status": "disabled",
+                "version": null
+            },
+            {
+                "description": "Alias to nvidia add-on",
+                "name": "gpu",
+                "repository": "core",
+                "status": "disabled",
+                "version": "22.9.1"
+            },
+            {
+                "description": "Allow Pods connecting to Host services smoothly",
+                "name": "host-access",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.0.0"
+            },
+            {
+                "description": "Storage class; allocates storage from host directory",
+                "name": "hostpath-storage",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.4.2"
+            },
+            {
+                "description": "Ingress controller for external access",
+                "name": "ingress",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.8.0"
+            },
+            {
+                "description": "An advanced network fabric for Kubernetes",
+                "name": "kube-ovn",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.10.0-alpha1"
+            },
+            {
+                "description": "OpenEBS MayaStor",
+                "name": "mayastor",
+                "repository": "core",
+                "status": "disabled",
+                "version": "2.0.0-microk8s-1"
+            },
+            {
+                "description": "Loadbalancer for your Kubernetes cluster",
+                "name": "metallb",
+                "repository": "core",
+                "status": "disabled",
+                "version": "0.13.3"
+            },
+            {
+                "description": "MinIO object storage",
+                "name": "minio",
+                "repository": "core",
+                "status": "disabled",
+                "version": "4.5.1"
+            },
+            {
+                "description": "NVIDIA hardware (GPU and network) support",
+                "name": "nvidia",
+                "repository": "core",
+                "status": "disabled",
+                "version": "gpu=22.9.1/network=23.7.0/microk8s-1"
+            },
+            {
+                "description": "A lightweight observability stack for logs, traces and metrics",
+                "name": "observability",
+                "repository": "core",
+                "status": "disabled",
+                "version": "0.57.0"
+            },
+            {
+                "description": "Prometheus operator for monitoring and logging",
+                "name": "prometheus",
+                "repository": "core",
+                "status": "disabled",
+                "version": "v0.8.0"
+            },
+            {
+                "description": "Role-Based Access Control for authorisation",
+                "name": "rbac",
+                "repository": "core",
+                "status": "disabled",
+                "version": null
+            },
+            {
+                "description": "Private image registry exposed on localhost:32000",
+                "name": "registry",
+                "repository": "core",
+                "status": "disabled",
+                "version": "2.8.1"
+            },
+            {
+                "description": "Distributed Ceph storage using Rook",
+                "name": "rook-ceph",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.11.9"
+            },
+            {
+                "description": "Alias to hostpath-storage add-on, deprecated",
+                "name": "storage",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.4.0"
+            }
+        ],
+        "high-availability": {
+            "enabled": true,
+            "nodes": [
+                {
+                    "address": "127.0.0.1:19001",
+                    "role": "voter"
+                }
+            ]
+        },
+        "microk8s": {
+            "running": true
+        }
+    }
+}
+
+TASK [microk8s : Enable addons] ************************************************
+ok: [master]
+
+TASK [microk8s : Check status addons] ******************************************
+ok: [master]
+
+TASK [microk8s : Echo status addons] *******************************************
+ok: [master] => {
+    "msg": {
+        "addons": [
+            {
+                "description": "The Kubernetes dashboard",
+                "name": "dashboard",
+                "repository": "core",
+                "status": "enabled",
+                "version": "2.6.0"
+            },
+            {
+                "description": "CoreDNS",
+                "name": "dns",
+                "repository": "core",
+                "status": "enabled",
+                "version": "1.10.1"
+            },
+            {
+                "description": "Configure high availability on the current node",
+                "name": "ha-cluster",
+                "repository": "core",
+                "status": "enabled",
+                "version": "0.1.0"
+            },
+            {
+                "description": "Helm - the package manager for Kubernetes",
+                "name": "helm",
+                "repository": "core",
+                "status": "enabled",
+                "version": "3.9.1"
+            },
+            {
+                "description": "Helm 3 - the package manager for Kubernetes",
+                "name": "helm3",
+                "repository": "core",
+                "status": "enabled",
+                "version": "3.9.1"
+            },
+            {
+                "description": "K8s Metrics Server for API access to service metrics",
+                "name": "metrics-server",
+                "repository": "core",
+                "status": "enabled",
+                "version": "0.6.3"
+            },
+            {
+                "description": "Cloud native certificate management",
+                "name": "cert-manager",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.8.0"
+            },
+            {
+                "description": "Apply CIS K8s hardening",
+                "name": "cis-hardening",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.0.0"
+            },
+            {
+                "description": "The community addons repository",
+                "name": "community",
+                "repository": "core",
+                "status": "disabled",
+                "version": null
+            },
+            {
+                "description": "Alias to nvidia add-on",
+                "name": "gpu",
+                "repository": "core",
+                "status": "disabled",
+                "version": "22.9.1"
+            },
+            {
+                "description": "Allow Pods connecting to Host services smoothly",
+                "name": "host-access",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.0.0"
+            },
+            {
+                "description": "Storage class; allocates storage from host directory",
+                "name": "hostpath-storage",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.4.2"
+            },
+            {
+                "description": "Ingress controller for external access",
+                "name": "ingress",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.8.0"
+            },
+            {
+                "description": "An advanced network fabric for Kubernetes",
+                "name": "kube-ovn",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.10.0-alpha1"
+            },
+            {
+                "description": "OpenEBS MayaStor",
+                "name": "mayastor",
+                "repository": "core",
+                "status": "disabled",
+                "version": "2.0.0-microk8s-1"
+            },
+            {
+                "description": "Loadbalancer for your Kubernetes cluster",
+                "name": "metallb",
+                "repository": "core",
+                "status": "disabled",
+                "version": "0.13.3"
+            },
+            {
+                "description": "MinIO object storage",
+                "name": "minio",
+                "repository": "core",
+                "status": "disabled",
+                "version": "4.5.1"
+            },
+            {
+                "description": "NVIDIA hardware (GPU and network) support",
+                "name": "nvidia",
+                "repository": "core",
+                "status": "disabled",
+                "version": "gpu=22.9.1/network=23.7.0/microk8s-1"
+            },
+            {
+                "description": "A lightweight observability stack for logs, traces and metrics",
+                "name": "observability",
+                "repository": "core",
+                "status": "disabled",
+                "version": "0.57.0"
+            },
+            {
+                "description": "Prometheus operator for monitoring and logging",
+                "name": "prometheus",
+                "repository": "core",
+                "status": "disabled",
+                "version": "v0.8.0"
+            },
+            {
+                "description": "Role-Based Access Control for authorisation",
+                "name": "rbac",
+                "repository": "core",
+                "status": "disabled",
+                "version": null
+            },
+            {
+                "description": "Private image registry exposed on localhost:32000",
+                "name": "registry",
+                "repository": "core",
+                "status": "disabled",
+                "version": "2.8.1"
+            },
+            {
+                "description": "Distributed Ceph storage using Rook",
+                "name": "rook-ceph",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.11.9"
+            },
+            {
+                "description": "Alias to hostpath-storage add-on, deprecated",
+                "name": "storage",
+                "repository": "core",
+                "status": "disabled",
+                "version": "1.4.0"
+            }
+        ],
+        "high-availability": {
+            "enabled": true,
+            "nodes": [
+                {
+                    "address": "127.0.0.1:19001",
+                    "role": "voter"
+                }
+            ]
+        },
+        "microk8s": {
+            "running": true
+        }
+    }
+}
+
+TASK [microk8s : Create kubectl config] ****************************************
+changed: [master]
+
+TASK [microk8s : Get microk8s cluster nodes] ***********************************
+ok: [master]
+
+TASK [microk8s : Echo status addons] *******************************************
+ok: [master] => {
+    "msg": "NAME     STATUS   ROLES    AGE   VERSION\nmaster   Ready    <none>   54m   v1.29.2"
+}
+
+PLAY RECAP *********************************************************************
+master                     : ok=16   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

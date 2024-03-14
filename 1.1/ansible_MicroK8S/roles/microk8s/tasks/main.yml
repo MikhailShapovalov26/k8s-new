@@ -9,11 +9,6 @@
     classic: true
     channel: "{{ microk8s_version }}"
 
-# - name: Create kubectl alias
-#   ansible.builtin.command: "snap alias microk8s.kubectl kubectl"
-#   changed_when: false
-#   register: __aliaskubectlout
-
 - name: Add user to control group
   ansible.builtin.user:
     name: "{{ ansible_user }}"
@@ -58,11 +53,12 @@
 
     - name: Echo status addons
       ansible.builtin.debug:
-        msg: "{{ __microk8s_checkaddons.stdout | from_yaml  }}"
+        msg: "{{ __microk8s_checkaddons.stdout | from_yaml }}"
 
     - name: Create kubectl config
-      ansible.builtin.shell: microk8s config > ~/.kube/config
+      ansible.builtin.command: microk8s config > /home/{{ ansible_user }}/.kube
       register: __null
+      changed_when: __null != 0
 
     - name: Get microk8s cluster nodes
       ansible.builtin.command: "kubectl get node"
@@ -71,4 +67,4 @@
 
     - name: Echo status addons
       ansible.builtin.debug:
-        msg: "{{ __microk8s_cluster_node.stdout  }}"
+        msg: "{{ __microk8s_cluster_node.stdout }}"

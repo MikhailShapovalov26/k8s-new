@@ -1,0 +1,21 @@
+---
+- name: List Network Interfaces
+  ansible.builtin.command: "dig +short myip.opendns.com @resolver1.opendns.com"
+  register: interface_result
+  changed_when: interface_result != 0
+
+- name: Пример использования IP-адреса
+  debug:
+    msg: "IP-адрес: {{ interface_result.stdout_lines[0] }}"
+
+- name: Добавить строку IP.4 в блок [alt_names]
+  ansible.builtin.lineinfile:
+    path: /var/snap/microk8s/current/certs/csr.conf.template
+    line: "IP.4 = {{ interface_result.stdout_lines[0] }}"
+    insertafter: '^\[ alt_names \]$'
+    state: present
+
+- name: List Network Interfaces
+  ansible.builtin.command: "microk8s refresh-certs --cert front-proxy-client.crt"
+  register: my_output
+  changed_when: my_output.rc != 0

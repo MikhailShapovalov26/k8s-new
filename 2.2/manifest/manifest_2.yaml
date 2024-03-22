@@ -1,0 +1,73 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-csi
+provisioner: nfs.csi.k8s.io
+parameters:
+  share: /srv/nfs
+  server: 192.168.8.10
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+mountOptions:
+  - hard
+  - nfsvers=4.1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-test
+spec:
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: nfs-csi
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+spec:
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      initContainers:
+        - name: busybox-init
+          image: busybox:1.28
+          volumeMounts:
+            - name: vol
+              mountPath: /data
+          command:
+            - "sh"
+            - "-c"
+            - "mkdir -p /data2/log"
+      containers:
+        - name: multitool
+          image: wbitt/network-multitool
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: HTTP_PORT
+              value: "8080"
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: vol
+              mountPath: /data2
+          command:
+            - "sh"
+            - "-c"
+            - "mkdir -p /data2/log; while true; do echo \"Привет, мир $(date)\" >> /data2/log/output.txt; sleep 30; done"
+      volumes:
+        - name: vol
+          persistentVolumeClaim:
+            claimName: pvc-test

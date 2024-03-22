@@ -1,0 +1,88 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-test
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-test
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+spec:
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      initContainers:
+        - name: busybox-init
+          image: busybox:1.28
+          volumeMounts:
+            - name: vol
+              mountPath: /data
+          command:
+            - "sh"
+            - "-c"
+            - "mkdir -p /data/log"
+      containers:
+        - name: busybox
+          image: busybox:1.28
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: vol
+              mountPath: /data
+          command:
+            - "sh"
+            - "-c"
+            - "mkdir -p /data/log && while true; do echo \"Привет, мир $(date)\" >> /data/log/output.txt; sleep 20; done"
+        - name: multitool
+          image: wbitt/network-multitool
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: HTTP_PORT
+              value: "8080"
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: vol
+              mountPath: /data
+          command:
+            - "sh"
+            - "-c"
+            - "while true; do cat /data/log/output.txt; sleep 30; done"
+      volumes:
+        - name: vol
+          persistentVolumeClaim:
+            claimName: pvc-test

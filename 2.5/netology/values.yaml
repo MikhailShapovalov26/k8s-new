@@ -1,0 +1,13 @@
+replicaCount: 1
+
+deploymentName: app
+
+image:
+  repository: nginx
+  tag: "1.16"
+  pullPolicy: IfNotPresent
+
+
+service:
+  type: ClusterIP
+  port: 80

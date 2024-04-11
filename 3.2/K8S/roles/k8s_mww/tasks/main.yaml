@@ -1,0 +1,26 @@
+---
+- name: Initialize K8S cluster
+  ansible.builtin.command: |
+     kubeadm init --pod-network-cidr={{ k8s_mww_pod_network_cidr }} --apiserver-advertise-address={{ ansible_host }} \
+        --ignore-preflight-errors=all
+  register: my_output
+  changed_when: my_output.rc != 0
+  when: inventory_hostname == 'k8s-master1'
+
+- name: Create .kube directoryi and copy kube config file
+  ansible.builtin.command: "{{ item }}"
+  loop:
+    - "mkdir -p /home/{{ ansible_ssh_user }}/.kube"
+    - "cp -i /etc/kubernetes/admin.conf /home/{{ ansible_ssh_user }}/.kube/config"
+    - "chown {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/.kube/config"
+  register: my_output
+  changed_when: my_output.rc != 0
+  when: inventory_hostname == 'k8s-master1'
+
+- name: Install Pod network
+  become: true
+  become_user: "{{ ansible_ssh_user }}"
+  ansible.builtin.command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+  register: my_output
+  changed_when: my_output.rc != 0
+  when: inventory_hostname == 'k8s-master1'

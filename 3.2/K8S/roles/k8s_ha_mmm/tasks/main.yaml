@@ -1,0 +1,15 @@
+- name: Install keepalived haproxe
+  ansible.builtin.include_tasks:
+    file: keepalived_haproxy.yaml
+  when: inventory_hostname in groups['k8s_masters']
+
+- name: Prepare to Join
+  ansible.builtin.include_tasks:
+    file: prepare.yaml
+  when: inventory_hostname == groups['k8s_masters'][0]
+
+
+- name: Join another control nodes
+  ansible.builtin.include_tasks:
+    file: join.yaml
+  when: inventory_hostname != groups['k8s_masters'][0]

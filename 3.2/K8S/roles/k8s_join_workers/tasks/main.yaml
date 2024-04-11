@@ -1,0 +1,23 @@
+- name: Get join command
+  ansible.builtin.command: kubeadm token create
+  register: join_token
+  changed_when: join_token.rc != 0
+  when: inventory_hostname == 'k8s-master1'
+
+- name: Get discovery-token-ca-cert-hash
+  ansible.builtin.shell: |
+    set -o pipefail
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: discovery_token_ca_cert_hash
+  changed_when: discovery_token_ca_cert_hash.rc != 0
+  when: inventory_hostname == 'k8s-master1'
+
+- name: Join cluster
+  ansible.builtin.shell:
+    cmd: |
+      kubeadm join {{ k8s_join_workers_cluster_virtual_ip }}:7443 \
+      --token {{ hostvars['k8s-master1'].join_token.stdout }} \
+      --discovery-token-ca-cert-hash sha256:{{ hostvars['k8s-master1'].discovery_token_ca_cert_hash.stdout }}
+  when: '"worker" in inventory_hostname'
+  register: certificate_key
+  changed_when: certificate_key.rc != 0

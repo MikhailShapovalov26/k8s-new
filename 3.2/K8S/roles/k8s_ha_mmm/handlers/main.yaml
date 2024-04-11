@@ -1,0 +1,17 @@
+- name: Restart kubelet
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
+    state: restarted
+
+- name: Restart keepalived
+  ansible.builtin.systemd:
+    name: keepalived
+    state: restarted
+    enabled: true
+
+- name: Restart haproxy
+  ansible.builtin.systemd:
+    name: haproxy
+    state: restarted
+    enabled: true

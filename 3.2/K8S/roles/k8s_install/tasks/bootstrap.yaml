@@ -1,0 +1,26 @@
+- name: Configure timezone on all nodes
+  community.general.timezone:
+    name: "{{ k8s_install_timezone }}"
+
+- name: Loading the kernel module br_netfilter
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+    persistent: present
+
+- name: Ensure net.bridge.bridge-nf-call-ip6tables is set to 1
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+    sysctl_set: true
+  with_items:
+    - {key: net.bridge.bridge-nf-call-iptables, value: 1}
+    - {key: net.ipv4.ip_forward, value: 1}
+    - {key: net.bridge.bridge-nf-call-ip6tables, value: 1}
+
+- name: Install packages that allow apt to be used over HTTPS
+  ansible.builtin.apt:
+    name: "{{ k8s_install_list_packages }}"
+    update_cache: true

@@ -1,0 +1,31 @@
+- name: Install k8s
+  hosts: all
+  become: true
+  roles:
+    - role: k8s_install
+      k8s_install_container_runtime: "containerd"
+      k8s_install_timezone: "Europe/Moscow"
+
+- name: Install k8s mww
+  hosts: all
+  become: true
+  roles:
+    - role: k8s_mww
+      k8s_mww_pod_network_cidr: "172.16.0.0/16"
+      when: "'k8s_masters' not in groups"
+
+- name: Install k8s mmm
+  hosts: all
+  become: true
+  roles:
+    - role: k8s_ha_mmm
+      k8s_ha_mmm_pod_network_cidr: "172.16.0.0/16"
+      k8s_ha_mmm_ha_cluster_virtual_ip: 10.1.11.100
+      when: ('k8s_masters' in groups) and (inventory_hostname in groups['k8s_masters'])
+
+- name: Adding wokrer
+  hosts: all
+  become: true
+  roles:
+    - role: k8s_join_workers
+      k8s_join_workers_cluster_virtual_ip: 10.1.11.100
